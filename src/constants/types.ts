@@ -12,6 +12,10 @@ export enum AppModels {
 
 	location = "Location",
 	appointment = "Appointment",
+
+	conversationPersonal = "Conversation-Presonel",
+	conversationMedical = "Conversation-Medical",
+	message = "Message",
 }
 
 export enum userRole {
