@@ -1,11 +1,12 @@
 import Jwt from "jsonwebtoken";
 import crypto from "crypto-js";
-import { AuthPayload } from "../dio";
 import expressAsyncHandler from "express-async-handler";
 import { AppERROR } from ".";
 import { Types, Document } from "mongoose";
-import { User, UserDoc } from "../models/auth";
+
 import { AppModels, ErrorMessage, ErrorStatus } from "../constants";
+import { AuthPayload } from "../feauture/auth/dio/auth";
+import { UserDoc, User } from "../feauture/auth/models";
 
 export const cryptPass = (passwd: string) => {
 	return crypto.AES.encrypt(passwd, process.env.SECRET!).toString();
@@ -38,7 +39,10 @@ export const validSign = expressAsyncHandler(async (req, res, next) => {
 
 	if (authHeader) {
 		const token = authHeader.split(" ")[1];
-		const payload = Jwt.verify(token, process.env.JWT_SECRET!) as AuthPayload;
+		const payload = Jwt.verify(
+			token,
+			process.env.JWT_SECRET!
+		) as AuthPayload;
 
 		const user = await User.findOne({
 			_id: payload.id,
@@ -46,14 +50,33 @@ export const validSign = expressAsyncHandler(async (req, res, next) => {
 			name: payload.name,
 		});
 
-		if (!user) return next(new AppERROR(ErrorMessage.Un_Authorized, ErrorStatus.Un_Authorized));
-		const checkkind = payload.kind === AppModels.doctor ? user.kind === AppModels.doctor : true;
+		if (!user)
+			return next(
+				new AppERROR(
+					ErrorMessage.Un_Authorized,
+					ErrorStatus.Un_Authorized
+				)
+			);
+		const checkkind =
+			payload.kind === AppModels.doctor
+				? user.kind === AppModels.doctor
+				: true;
 		if (!checkkind)
-			return next(new AppERROR(ErrorMessage.Un_Authorized, ErrorStatus.Un_Authorized));
+			return next(
+				new AppERROR(
+					ErrorMessage.Un_Authorized,
+					ErrorStatus.Un_Authorized
+				)
+			);
 
 		req.user = payload;
 		return next();
 	}
 
-	return next(new AppERROR("Authorization error -MISSED TOKEN- ", ErrorStatus.Un_Authorized));
+	return next(
+		new AppERROR(
+			"Authorization error -MISSED TOKEN- ",
+			ErrorStatus.Un_Authorized
+		)
+	);
 });

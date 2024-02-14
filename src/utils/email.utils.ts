@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import nodemailer from "nodemailer";
-import { EmailVerification, User } from "../models/auth";
 import { AppERROR } from "./error";
+import { EmailVerification, User } from "../feauture/auth/models";
 
 export const sendVerifyEmail = async (email: string, link: string) => {
 	const transporter = nodemailer.createTransport({

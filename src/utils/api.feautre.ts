@@ -1,4 +1,4 @@
-import { Document, Query } from "mongoose";
+import { Document, Model, Types, Query } from "mongoose";
 
 interface Pagination {
 	currentPage: number;
@@ -8,29 +8,32 @@ interface Pagination {
 	previous?: number;
 }
 
-class ModelsGetter<T extends Document> {
-	monogosQuery: Query<T[], T>;
+class ModelsGetter<T> {
+	query: Query<T[], T>;
 	queryString: any; // Change the type accordingly
 
 	paginationResults: Pagination | undefined;
 
 	constructor(monogosQuery: Query<T[], T>, queryString: any) {
-		this.monogosQuery = monogosQuery;
+		this.query = monogosQuery;
 		this.queryString = queryString;
 	}
 
 	filter(): this {
 		const queryStringObj = { ...this.queryString };
 		let queryStr = JSON.stringify(queryStringObj);
-		queryStr = queryStr.replace(/\b(gte|lte|lt|gt)\b/g, (match) => `$${match}`);
-		this.monogosQuery = this.monogosQuery.find(JSON.parse(queryStr));
+		queryStr = queryStr.replace(
+			/\b(gte|lte|lt|gt)\b/g,
+			(match) => `$${match}`
+		);
+		this.query = this.query.find(JSON.parse(queryStr));
 		return this;
 	}
 
 	sort(): this {
 		if (this.queryString.sort) {
 			const sortBy = this.queryString.sort.split(",").join(" ");
-			this.monogosQuery = this.monogosQuery.sort(sortBy);
+			this.query = this.query.sort(sortBy);
 		}
 		return this;
 	}
@@ -38,7 +41,7 @@ class ModelsGetter<T extends Document> {
 	fields(): this {
 		if (this.queryString.fields) {
 			const fields = this.queryString.fields.split(",").join(" ");
-			this.monogosQuery = this.monogosQuery.select(fields);
+			this.query = this.query.select(fields);
 		}
 		return this;
 	}
@@ -55,7 +58,7 @@ class ModelsGetter<T extends Document> {
 					},
 				},
 			];
-			this.monogosQuery = this.monogosQuery.find(query);
+			this.query = this.query.find(query);
 		}
 		return this;
 	}
@@ -79,7 +82,7 @@ class ModelsGetter<T extends Document> {
 			pagination.previous = page - 1;
 		}
 
-		this.monogosQuery = this.monogosQuery.skip(skip).limit(limit);
+		this.query = this.query.skip(skip).limit(limit);
 
 		this.paginationResults = pagination;
 

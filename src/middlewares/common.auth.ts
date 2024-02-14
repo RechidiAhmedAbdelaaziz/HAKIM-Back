@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { validSign, AppERROR } from "../utils";
 import { AppModels, ErrorMessage, ErrorStatus, Errors } from "../constants";
-import { AuthPayload } from "../dio";
+import { AuthPayload } from "../feauture/auth/dio/auth";
 
 export const verifyAuthorization = expressAsyncHandler((req, res, next) => {
 	return validSign(req, res, () => {

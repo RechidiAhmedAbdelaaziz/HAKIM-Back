@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyAuthorization, verifyDoctor } from "../middlewares/common.auth";
-import { AppointmentController as controller } from "../controller";
+import { AppointmentController as controller } from "../feauture/appointment/controller/appointment";
 
 const router = express.Router();
 

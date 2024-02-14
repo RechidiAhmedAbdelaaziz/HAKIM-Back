@@ -4,11 +4,10 @@ export class AppResponse {
 	statusCode: number;
 	data?: object;
 	message?: string;
-	constructor(statusCode: number, data?: object, message?: string) {
+	constructor(statusCode: number, data?: any, message?: string) {
 		this.statusCode = statusCode;
 		this.message = message;
 		this.data = data;
-		
 	}
 }
 
@@ -18,6 +17,5 @@ export const sendRes = (response: AppResponse, res: Response) => {
 		message: response.message,
 		data: response.data,
 		code: response.statusCode,
-
 	});
 };
