@@ -10,7 +10,6 @@ import {
 } from "../../../constants";
 import { AppERROR, AppResponse, sendRes } from "../../../utils";
 import { Applogger } from "../../../service";
-import { paginate } from "../../../utils/paginate";
 import { AuthPayload } from "../../auth/dio/auth";
 import { User, Doctor } from "../../auth/models";
 import { createAppointment, getAppointment, updateAppointment, deleteAppointment, getDoctorAppoinments, getPatientAppoinments } from "../db/appointment";

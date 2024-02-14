@@ -5,6 +5,7 @@ import { Applogger } from "../../../service";
 import { Doctor, User } from "../../auth/models";
 import { CreateAppointmentDio, EditAppointmentDio } from "../dio/appointment";
 import { AppointmentType, Appointment } from "../models/appointment";
+import ModelsGetter, { ModelsGetterReturn } from "../../../utils/model.getter";
 
 export const createAppointment = async (
 	info: CreateAppointmentDio
@@ -32,14 +33,22 @@ export const getAppointment = async (
 
 export const getPatientAppoinments = async (
 	patientId: any,
-	query?: any
-): Promise<AppointmentType[]> => {
-	const { skip, limit } = getSkip({ page: query.page, limit: query.limit });
-	const appoinments = Appointment.find({ patient: patientId }, dontShow)
-		.sort({ date: -1 })
-		.skip(skip)
-		.limit(limit);
-	return appoinments;
+	queryString?: any
+): Promise<ModelsGetterReturn<AppointmentType[]>> => {
+	const query_ = new ModelsGetter<AppointmentType>(
+		Appointment.find({ patient: patientId }),
+		queryString
+	);
+
+	const { query, paginationResults } = query_
+		.sort()
+		.fields()
+		.filter()
+		.paginate(await Appointment.countDocuments({}));
+
+	const appointments = await query;
+
+	return { result: appointments, paginaation: paginationResults };
 };
 export const getDoctorAppoinments = async (
 	doctorId: any,

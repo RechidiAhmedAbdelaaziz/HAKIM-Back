@@ -90,4 +90,9 @@ class ModelsGetter<T> {
 	}
 }
 
+export interface ModelsGetterReturn<T> {
+	result: T;
+	paginaation?: Pagination;
+}
+
 export default ModelsGetter;
