@@ -16,8 +16,8 @@ const schema = new Schema(
 			ref: AppModels.user,
 			required: true,
 		},
-		likers: [{ type: Schema.Types.ObjectId, ref: AppModels.user }],
-		comments: [{ type: Schema.Types.ObjectId, ref: AppModels.comment }],
+		likers: { type: Number, default: 0 },
+		comments: { type: Number, default: 0 },
 	},
 	{ timestamps: true }
 );
