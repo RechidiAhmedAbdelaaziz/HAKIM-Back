@@ -4,7 +4,11 @@ import { dontShow } from "../../../constants";
 import { Applogger } from "../../../service";
 import { Doctor, User } from "../../auth/models";
 import { CreateAppointmentDio, EditAppointmentDio } from "../dio/appointment";
-import { AppointmentType, Appointment } from "../models/appointment";
+import {
+	AppointmentType,
+	Appointment,
+	AppointmentDoc,
+} from "../models/appointment";
 import ModelsGetter, { ModelsGetterReturn } from "../../../utils/model.getter";
 
 export const createAppointment = async (
@@ -34,34 +38,38 @@ export const getAppointment = async (
 export const getPatientAppoinments = async (
 	patientId: any,
 	queryString?: any
-): Promise<ModelsGetterReturn<AppointmentType[]>> => {
-	const query_ = new ModelsGetter<AppointmentType>(
-		Appointment.find({ patient: patientId }),
-		queryString
-	);
-
+): Promise<ModelsGetterReturn<any>> => {
+	const query_ = new ModelsGetter(Appointment.find(), queryString);
 	const { query, paginationResults } = query_
+		.select({ patient: patientId })
 		.sort()
 		.fields()
 		.filter()
+		.search(["type"])
 		.paginate(await Appointment.countDocuments({}));
 
-	const appointments = await query;
+	Applogger.info(query);
 
-	return { result: appointments, paginaation: paginationResults };
+	const appointments = await query.exec();
+
+	return { result: appointments, pagination: paginationResults };
 };
 export const getDoctorAppoinments = async (
-	doctorId: any,
-	query?: any
-): Promise<AppointmentType[]> => {
-	const { skip, limit } = getSkip({ page: query.page, limit: query.limit });
+	patientId: any,
+	queryString?: any
+): Promise<ModelsGetterReturn<any>> => {
+	const query_ = new ModelsGetter(Appointment.find(), queryString);
+	const { query, paginationResults } = query_
+		.select({ doctor: patientId })
+		.sort()
+		.fields()
+		.filter()
+		.search(["type"])
+		.paginate(await Appointment.countDocuments({}));
 
-	const appoinments = await Appointment.find({ doctor: doctorId }, dontShow)
-		.sort({ date: -1 })
-		.skip(skip)
-		.limit(limit);
+	const appointments = await query.exec();
 
-	return appoinments;
+	return { result: appointments, pagination: paginationResults };
 };
 
 export const updateAppointment = async (

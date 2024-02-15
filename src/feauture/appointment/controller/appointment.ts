@@ -1,6 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
 
-
 import {
 	AppModels,
 	ErrorMessage,
@@ -12,11 +11,18 @@ import { AppERROR, AppResponse, sendRes } from "../../../utils";
 import { Applogger } from "../../../service";
 import { AuthPayload } from "../../auth/dio/auth";
 import { User, Doctor } from "../../auth/models";
-import { createAppointment, getAppointment, updateAppointment, deleteAppointment, getDoctorAppoinments, getPatientAppoinments } from "../db/appointment";
+import {
+	createAppointment,
+	getAppointment,
+	updateAppointment,
+	deleteAppointment,
+	getDoctorAppoinments,
+	getPatientAppoinments,
+} from "../db/appointment";
 import { CreateAppointmentDio } from "../dio/appointment";
 import { AppointmentDoc } from "../models/appointment";
 
-const controller =  {
+const controller = {
 	create: expressAsyncHandler(async (req, res, next) => {
 		const { date, type, patient } = <CreateAppointmentDio>req.body;
 
@@ -104,9 +110,9 @@ const controller =  {
 		);
 		sendRes(Response, res);
 	}),
-} ;
+};
 
-export {controller as AppointmentController};
+export { controller as AppointmentController };
 
 const getDoctor = expressAsyncHandler(async (req, res, next) => {
 	const { id } = <AuthPayload>req.user;
@@ -120,7 +126,7 @@ const getDoctor = expressAsyncHandler(async (req, res, next) => {
 const getPatient = expressAsyncHandler(async (req, res, next) => {
 	const { id } = <AuthPayload>req.user;
 
-	const appointments = await getPatientAppoinments(id);
+	const appointments = await getPatientAppoinments(id, req.query);
 	if (!appointments) return next(new Errors(AppModels.appointment).Not_found);
 
 	const Response = new AppResponse(ResStatus.OK, appointments);

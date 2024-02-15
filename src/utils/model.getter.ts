@@ -1,12 +1,26 @@
-import { Document, Model, Types, Query } from "mongoose";
+import { Document, Model, Types, Query, FilterQuery } from "mongoose";
+import { Applogger } from "../service";
+import { generateSearchQuery } from "./search";
 
-interface Pagination {
+export interface Pagination {
 	currentPage: number;
-	limit: number;
+	length?: number;
 	pagesNumber: number;
 	next?: number;
 	previous?: number;
 }
+
+type modelType<T> = Model<
+	T,
+	{},
+	{},
+	{},
+	Document<unknown, {}, T> &
+		T & {
+			_id: Types.ObjectId;
+		},
+	any
+>;
 
 class ModelsGetter<T> {
 	query: Query<T[], T>;
@@ -20,13 +34,18 @@ class ModelsGetter<T> {
 	}
 
 	filter(): this {
-		const queryStringObj = { ...this.queryString };
+		const queryStringObj = { ...this.queryString.filter };
 		let queryStr = JSON.stringify(queryStringObj);
 		queryStr = queryStr.replace(
 			/\b(gte|lte|lt|gt)\b/g,
 			(match) => `$${match}`
 		);
 		this.query = this.query.find(JSON.parse(queryStr));
+		return this;
+	}
+
+	select(fliter: FilterQuery<T>): this {
+		this.query = this.query.find(fliter);
 		return this;
 	}
 
@@ -46,38 +65,34 @@ class ModelsGetter<T> {
 		return this;
 	}
 
-	search(): this {
+	search(search: string[]): this {
 		if (this.queryString.search) {
-			const query: any = {};
-			query.$or = [
-				{ title: { $regex: this.queryString.keyword, $options: "i" } },
-				{
-					description: {
-						$regex: this.queryString.keyword,
-						$options: "i",
-					},
-				},
-			];
-			this.query = this.query.find(query);
+			const searchQuery = generateSearchQuery(
+				search,
+				this.queryString.search
+			);
+			Applogger.warn(searchQuery);
+
+			this.query = this.query.find(searchQuery);
 		}
 		return this;
 	}
 
 	paginate(countDocuments: number): this {
 		const page = this.queryString.page * 1 || 1;
-		const limit = 10;
+		const limit = this.queryString.limit * 1 || 10;
 		const skip = (page - 1) * limit;
 		const endIndex = page * limit;
 
 		const pagination: Pagination = {
 			currentPage: page,
-			limit,
 			pagesNumber: Math.ceil(countDocuments / limit),
 		};
 
 		if (endIndex < countDocuments) {
 			pagination.next = page + 1;
-		}
+			pagination.length = limit;
+		} else pagination.length = countDocuments - endIndex;
 		if (skip > 0) {
 			pagination.previous = page - 1;
 		}
@@ -92,7 +107,7 @@ class ModelsGetter<T> {
 
 export interface ModelsGetterReturn<T> {
 	result: T;
-	paginaation?: Pagination;
+	pagination?: Pagination;
 }
 
 export default ModelsGetter;
