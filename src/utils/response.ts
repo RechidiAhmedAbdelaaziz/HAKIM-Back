@@ -1,13 +1,28 @@
 import { Response } from "express";
+import { ModelsGetterReturn, Pagination } from "./model.getter";
+import { Applogger } from "../service";
+interface response_ {
+	message?: string;
+	pagination?: Pagination;
+}
+
 export class AppResponse {
 	status = true;
 	statusCode: number;
 	data?: object;
 	message?: string;
-	constructor(statusCode: number, data?: any, message?: string) {
+	pagination?: Pagination;
+	constructor(
+		statusCode: number,
+		data?: ModelsGetterReturn<any> | any,
+		message?: string
+	) {
 		this.statusCode = statusCode;
+		this.pagination = data.pagination;
+		if (data.result) this.data = data.result;
+		else this.data = data;
+
 		this.message = message;
-		this.data = data;
 	}
 }
 
@@ -15,6 +30,7 @@ export const sendRes = (response: AppResponse, res: Response) => {
 	return res.status(response.statusCode).json({
 		status: response.status,
 		message: response.message,
+		pagination: response.pagination,
 		data: response.data,
 		code: response.statusCode,
 	});
