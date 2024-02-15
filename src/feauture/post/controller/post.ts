@@ -22,7 +22,7 @@ import { CreatePostDio, UpdatePostDio } from "../dio/post";
 
 const controller = {
 	getAll: expressAsyncHandler(async (req, res, next) => {
-		const posts = await getPosts();
+		const posts = await getPosts(req.query);
 		if (!posts)
 			return next(
 				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
@@ -33,7 +33,7 @@ const controller = {
 	}),
 	getMyPosts: expressAsyncHandler(async (req, res, next) => {
 		const { id } = <AuthPayload>req.user;
-		const posts = await getUserPosts(id);
+		const posts = await getUserPosts(req.query,id);
 		if (!posts) return next(new Errors(AppModels.post).Not_found);
 
 		const response = new AppResponse(ResStatus.OK, posts);

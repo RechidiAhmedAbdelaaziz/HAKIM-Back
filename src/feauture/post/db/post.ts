@@ -1,8 +1,9 @@
 import { CreatePostDio, UpdatePostDio } from "../dio/post";
-import { Post, PostType } from "../models/post";
+import { Post, PostDoc, PostType } from "../models/post";
 import { dontShow } from "../../../constants";
-import { Document, Schema } from "mongoose";
+import { Document, Query, Schema } from "mongoose";
 import { User } from "../../auth/models";
+import ModelsGetter, { ModelsGetterReturn } from "../../../utils/model.getter";
 
 export const createPost = async (info: CreatePostDio): Promise<any> => {
 	const post = await Post.create(info);
@@ -13,18 +14,32 @@ export const createPost = async (info: CreatePostDio): Promise<any> => {
 	return post;
 };
 
-export const getPosts = async (): Promise<any> => {
-	const posts = await Post.find({});
-	return posts;
+export const getPosts = async (
+	reqQuery: any
+): Promise<ModelsGetterReturn<PostDoc[]>> => {
+	const { query, paginationResults } = new ModelsGetter(Post.find(), reqQuery)
+		.sort()
+		.paginate(await Post.countDocuments({}));
+
+	const posts = await query.exec();
+	return { result: posts, pagination: paginationResults };
 };
 export const getUserPosts = async (
-	poster: Schema.Types.ObjectId
-): Promise<PostType[]> => {
-	const posts = await Post.find({ poster: poster });
-	return posts;
+	reqQuery: any,
+	userId: Schema.Types.ObjectId
+): Promise<ModelsGetterReturn<PostDoc[]>> => {
+	const { query, paginationResults } = new ModelsGetter(Post.find(), reqQuery)
+		.select({ poster: userId })
+		.sort()
+		.search(["post"])
+		.paginate(await Post.countDocuments({}));
+
+	const posts = await query.exec();
+	return { result: posts, pagination: paginationResults };
 };
 export const getPost = async (id: string): Promise<Document | null> => {
-	const post = await Post.findOne({ _id: id }, dontShow);
+	const query: Query<PostDoc[], PostDoc> = Post.find();
+	const post = await query.findOne({ _id: id }).exec();
 	return post;
 };
 

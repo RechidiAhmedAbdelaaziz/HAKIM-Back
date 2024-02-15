@@ -20,6 +20,7 @@ const schema = new Schema(
 			ref: AppModels.user,
 			required: true,
 		},
+		chat: { type: Schema.Types.ObjectId, ref: AppModels.conversation },
 	},
 	{ timestamps: true }
 );

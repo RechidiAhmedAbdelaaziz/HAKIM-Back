@@ -3,7 +3,6 @@ import { AppModels } from "../../../constants";
 
 export interface ConversationDoc extends Document {
 	users: Schema.Types.ObjectId[];
-	messages: Schema.Types.ObjectId[];
 }
 
 const schema = new Schema(
@@ -12,7 +11,6 @@ const schema = new Schema(
 			type: [{ type: Schema.Types.ObjectId, ref: AppModels.user }],
 			required: true,
 		},
-		messages: [{ type: Schema.Types.ObjectId, ref: AppModels.message }],
 	},
 	{ timestamps: true }
 );
