@@ -7,7 +7,7 @@ import {
 	Errors,
 	ResStatus,
 } from "../../../constants";
-import { AppERROR, AppResponse, sendRes } from "../../../utils";
+import { AppERROR, AppResponse, sendResponse } from "../../../utils";
 import { Applogger } from "../../../service";
 import { AuthPayload } from "../../auth/dio/auth";
 import { User, Doctor } from "../../auth/models";
@@ -57,7 +57,7 @@ const controller = {
 			{ appointment },
 			"Appointment created successfully"
 		);
-		sendRes(Response, res);
+		sendResponse(Response, res);
 	}),
 
 	get: expressAsyncHandler(async (req, res, next) => {
@@ -71,7 +71,7 @@ const controller = {
 			);
 
 		const Response = new AppResponse(ResStatus.OK, { appointment });
-		sendRes(Response, res);
+		sendResponse(Response, res);
 	}),
 
 	getAll: expressAsyncHandler(async (req, res, next) => {
@@ -95,7 +95,7 @@ const controller = {
 			{ appointment },
 			"Appointment rescheduled"
 		);
-		sendRes(Response, res);
+		sendResponse(Response, res);
 	}),
 
 	cancel: expressAsyncHandler(async (req, res) => {
@@ -108,7 +108,7 @@ const controller = {
 			{},
 			"Appointment canceld"
 		);
-		sendRes(Response, res);
+		sendResponse(Response, res);
 	}),
 };
 
@@ -120,7 +120,7 @@ const getDoctor = expressAsyncHandler(async (req, res, next) => {
 	if (!appointments) return next(new Errors(AppModels.appointment).Not_found);
 
 	const Response = new AppResponse(ResStatus.OK, appointments);
-	sendRes(Response, res);
+	sendResponse(Response, res);
 });
 
 const getPatient = expressAsyncHandler(async (req, res, next) => {
@@ -130,5 +130,5 @@ const getPatient = expressAsyncHandler(async (req, res, next) => {
 	if (!appointments) return next(new Errors(AppModels.appointment).Not_found);
 
 	const Response = new AppResponse(ResStatus.OK, appointments);
-	sendRes(Response, res);
+	sendResponse(Response, res);
 });

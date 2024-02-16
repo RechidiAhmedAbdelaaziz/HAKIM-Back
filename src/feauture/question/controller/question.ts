@@ -2,7 +2,7 @@ import { ResStatus } from "../../../constants/res.status";
 import expressAsyncHandler from "express-async-handler";
 
 import { AppModels, Errors } from "../../../constants";
-import { AppResponse, sendRes } from "../../../utils";
+import { AppResponse, sendResponse } from "../../../utils";
 import {
 	createAnswer,
 	createQuestion,
@@ -33,14 +33,14 @@ const controller = {
 		if (!questions) return next(new Errors(AppModels.question).Not_found);
 
 		const response = new AppResponse(ResStatus.OK, { questions });
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 	getQues: expressAsyncHandler(async (req, res, next) => {
 		const question = await getQuestion(req.params.id);
 		if (!question) return next(new Errors(AppModels.question).Not_found);
 
 		const response = new AppResponse(ResStatus.OK, question);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	ask: expressAsyncHandler(async (req, res, next) => {
@@ -58,7 +58,7 @@ const controller = {
 			{ question: created },
 			"Your question was created"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	editQues: expressAsyncHandler(async (req, res, next) => {
@@ -74,7 +74,7 @@ const controller = {
 			{},
 			"Your question was updated"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	deleteQues: expressAsyncHandler(async (req, res, next) => {
@@ -92,7 +92,7 @@ const controller = {
 			{},
 			"Your question was deleted"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	//*
@@ -105,14 +105,14 @@ const controller = {
 		if (!answers) return next(new Errors(AppModels.answer).Not_found);
 
 		const response = new AppResponse(ResStatus.OK, { answers });
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 	getAnswr: expressAsyncHandler(async (req, res, next) => {
 		const answer = await getAnswer(req.params.id);
 		if (!answer) return next(new Errors(AppModels.answer).Not_found);
 
 		const response = new AppResponse(ResStatus.OK, { answer });
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	answer: expressAsyncHandler(async (req, res, next) => {
@@ -132,7 +132,7 @@ const controller = {
 			{ answer: created },
 			"Your answer was posted"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	editAnswr: expressAsyncHandler(async (req, res, next) => {
@@ -148,7 +148,7 @@ const controller = {
 			{},
 			"Your answer was updated"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	deleteAnswr: expressAsyncHandler(async (req, res, next) => {
@@ -164,7 +164,7 @@ const controller = {
 			{},
 			"Your answer was deleted"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 };
 

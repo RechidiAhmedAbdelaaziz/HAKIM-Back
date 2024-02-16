@@ -2,7 +2,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { cryptPass, AppERROR, genrateSign, decryptPass } from "../../../utils";
 import { Schema } from "mongoose";
-import { AppResponse, sendRes } from "../../../utils/response";
+import { AppResponse, sendResponse } from "../../../utils/response";
 import {
 	ErrorMessage,
 	ErrorStatus,
@@ -21,7 +21,7 @@ export const getPorfile = expressAsyncHandler(async (req, res, next) => {
 	if (!user) return next(Errors.Genric);
 
 	const Response = new AppResponse(ResStatus.OK, user);
-	sendRes(Response, res);
+	sendResponse(Response, res);
 });
 
 export const login = expressAsyncHandler(async (req, res, next) => {
@@ -57,7 +57,7 @@ export const login = expressAsyncHandler(async (req, res, next) => {
 		token,
 		`Welcome Back ${user.name}`
 	);
-	sendRes(Response, res);
+	sendResponse(Response, res);
 });
 
 export const DoctorSignUp = expressAsyncHandler(async (req, res, next) => {
@@ -87,7 +87,7 @@ export const DoctorSignUp = expressAsyncHandler(async (req, res, next) => {
 		token,
 		ResMessages.Welcome_Dr + name
 	);
-	sendRes(response, res);
+	sendResponse(response, res);
 });
 
 export const SignUp = expressAsyncHandler(async (req, res, next) => {
@@ -113,7 +113,7 @@ export const SignUp = expressAsyncHandler(async (req, res, next) => {
 		token,
 		ResMessages.Welcome_Dr + name
 	);
-	sendRes(response, res);
+	sendResponse(response, res);
 });
 
 const sendVerificationEmail = async (

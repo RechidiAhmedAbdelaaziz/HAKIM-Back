@@ -12,7 +12,6 @@ const schema = new Schema(
 			type: [{ type: Schema.Types.ObjectId, ref: AppModels.user }],
 			required: true,
 		},
-		messages: [{ type: Schema.Types.ObjectId, ref: AppModels.message }],
 	},
 	{ timestamps: true }
 );

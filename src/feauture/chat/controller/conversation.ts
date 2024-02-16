@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 
-import { AppResponse, sendRes } from "../../../utils";
+import { AppResponse, sendResponse } from "../../../utils";
 import { AppModels, Errors, ResStatus } from "../../../constants";
 
 import { Schema } from "mongoose";
@@ -12,7 +12,7 @@ import {
 	updateConversation,
 	getConversations,
 	getConversationById,
-} from "../db/conversation";
+} from "../usecases/conversation";
 import { CreateMessageDio } from "../dio/conversation";
 
 const contrller = {
@@ -42,7 +42,7 @@ const contrller = {
 			message_,
 			"Message sent successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	// getMessages: expressAsyncHandler(async (req, res) => {
@@ -63,7 +63,7 @@ const contrller = {
 			conversations,
 			"Conversations g successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	getConversation: expressAsyncHandler(async (req, res, next) => {
@@ -79,7 +79,7 @@ const contrller = {
 			conversation,
 			"Conversations gotten successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 };
 
