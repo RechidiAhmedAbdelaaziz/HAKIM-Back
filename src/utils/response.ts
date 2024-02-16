@@ -11,7 +11,7 @@ export class AppResponse {
 	statusCode: number;
 	data?: object;
 	message?: string;
-	pagination?: Pagination;
+	pagination?: Pagination | null;
 	constructor(
 		statusCode: number,
 		data?: ModelsGetterReturn<any> | any,

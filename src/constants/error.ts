@@ -13,6 +13,9 @@ export class Errors {
 	}
 
 	static No_Model = (model: string): AppERROR => {
+		return new AppERROR(`There is no ${model}`, ErrorStatus.Not_Found);
+	};
+	static No_Models = (model: string): AppERROR => {
 		return new AppERROR(`There are no ${model}`, ErrorStatus.Not_Found);
 	};
 
@@ -21,15 +24,8 @@ export class Errors {
 		ErrorStatus.Un_Authorized
 	);
 
-	static No_User = new AppERROR(
-		`${AppModels.user} ${ErrorMessage.Not_Found}`,
-		ErrorStatus.Not_Found
-	);
 
-	static No_Conversations = new AppERROR(
-		`There are no conversations`,
-		ErrorStatus.Not_Found
-	);
+
 
 	static Genric = new AppERROR(
 		`${ErrorMessage.Generic}`,

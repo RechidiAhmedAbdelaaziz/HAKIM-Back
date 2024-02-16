@@ -4,34 +4,36 @@ import { AppResponse } from "../../../utils";
 import { Conversation } from "../models/conversation";
 import { Message } from "../models/message";
 import { UseCase } from "../../../utils/types/usecases";
+import { PaginationInput } from "../../../utils/types/pagination";
+import ModelsGetter from "../../../utils/model.getter";
 
 interface Params {
 	user: Schema.Types.ObjectId;
+	setting?: PaginationInput;
 }
 
 export const getConversations: UseCase<Params> = async (params) => {
-	const { user } = params;
+	const { user, setting } = params;
+
+	//Make query
+	const { query, paginationResults: pagination } = new ModelsGetter(
+		Conversation.find().sort({ updatedAt: -1 }),
+		setting
+	)
+		.select({
+			users: { $in: [user] },
+		})
+		.paginate(await Conversation.countDocuments({}));
 
 	//Get conversation
-	const conversations = await Conversation.find({
-		users: { $in: [user] },
-	});
-	if (!conversations) return { error: Errors.No_Conversations };
-
-	//Get 15 Messages for each conversation
-	conversations.map(async (conversation) => {
-		const messages = await Message.find({
-			chat: conversation._id,
-		})
-			.sort({ createdAt: -1 })
-			.limit(15);
-
-		if (messages)
-			conversation.messages = messages.map((message) => message._id);
-	});
+	const conversations = await query.exec();
+	if (!conversations) return { error: Errors.No_Models("Conversations") };
 
 	//Send Response
-	const response = new AppResponse(ResStatus.OK, conversations);
+	const response = new AppResponse(ResStatus.OK, {
+		result: conversations,
+		pagination,
+	});
 
 	return { response };
 };

@@ -17,7 +17,7 @@ export const getMessages: UseCase<Params> = async (params) => {
 
 	//Get conversation
 	const checkConversation = await Conversation.findById(conversation);
-	if (!checkConversation) return { error: Errors.No_Conversations };
+	if (!checkConversation) return { error: Errors.No_Model("Conversation") };
 
 	const { query, paginationResults } = new ModelsGetter(
 		Message.find().sort({ createdAt: -1 }),
@@ -27,7 +27,7 @@ export const getMessages: UseCase<Params> = async (params) => {
 		.paginate(await Message.countDocuments({}));
 
 	const messages = await query.exec();
-	if (!messages) return { error: Errors.No_Model("Messages") };
+	if (!messages) return { error: Errors.No_Models("Messages") };
 	//Send Response
 	const response = new AppResponse(ResStatus.OK, {
 		result: messages,
