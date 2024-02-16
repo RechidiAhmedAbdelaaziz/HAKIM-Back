@@ -92,7 +92,10 @@ class ModelsGetter<T> {
 		if (endIndex < countDocuments) {
 			pagination.next = page + 1;
 			pagination.length = limit;
-		} else pagination.length = countDocuments - endIndex;
+		} else {
+			pagination.length = countDocuments - endIndex;
+			if (pagination.length < 0) pagination.length = countDocuments;
+		}
 		if (skip > 0) {
 			pagination.previous = page - 1;
 		}

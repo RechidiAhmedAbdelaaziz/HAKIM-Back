@@ -1,5 +1,3 @@
-import { login } from "../../auth/controller/auth.controller";
-import { getSkip } from "../../../utils/paginate";
 import { dontShow } from "../../../constants";
 import { Applogger } from "../../../service";
 import { Doctor, User } from "../../auth/models";

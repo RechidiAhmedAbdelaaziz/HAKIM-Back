@@ -1,85 +1,57 @@
-import expressAsyncHandler from "express-async-handler";
-
-import { AppResponse, sendResponse } from "../../../utils";
-import { AppModels, Errors, ResStatus } from "../../../constants";
-
 import { Schema } from "mongoose";
+import expressAsyncHandler from "express-async-handler";
+import { ConversationUseCases as useCases } from "../usecases";
 import { AuthPayload } from "../../auth/dio/auth";
-import {
-	createMessage,
-	getConversation,
-	createConversation,
-	updateConversation,
-	getConversations,
-	getConversationById,
-} from "../usecases/conversation";
-import { CreateMessageDio } from "../dio/conversation";
+import { SendErorrOrResponse } from "../../../utils";
 
 const contrller = {
 	sendMessage: expressAsyncHandler(async (req, res, next) => {
-		const { id: sender } = req.user as AuthPayload;
+		const { id: sender, kind: senderKind } = req.user as AuthPayload;
 		const receiver = req.params.id as unknown as Schema.Types.ObjectId;
-		const { message } = <CreateMessageDio>req.body;
+		const { text } = req.body;
 
-		const message_ = await createMessage({ sender, receiver, message });
-		if (!message_) return next(new Errors(AppModels.message).Not_found);
-
-		let conversation = await getConversation({ receiver, sender });
-		if (!conversation)
-			conversation = await createConversation({ sender, receiver });
-		if (!conversation)
-			return next(new Errors(AppModels.conversation).Not_found);
-
-		conversation = await updateConversation({
-			id: conversation._id,
-			message: message_._id,
+		const result = await useCases.sendMessage({
+			sender,
+			receiver,
+			text,
+			senderKind,
 		});
-		if (!conversation)
-			return next(new Errors(AppModels.conversation).Not_found);
 
-		const response = new AppResponse(
-			ResStatus.OK,
-			message_,
-			"Message sent successfully"
-		);
-		sendResponse(response, res);
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	// getMessages: expressAsyncHandler(async (req, res) => {
-	// 	const user = req.user;
-	// 	const { receiver, sender } = <GetConversationDio>req.body;
-	// 	const messages = await getConversation({ receiver, sender });
-	// }),
+	listMessages: expressAsyncHandler(async (req, res, next) => {
+		const conversation = req.params.id as unknown as Schema.Types.ObjectId;
 
-	getConversations: expressAsyncHandler(async (req, res, next) => {
-		const { id: userId } = req.user as AuthPayload;
+		const result = await useCases.getMessages({
+			conversation,
+			setting: req.query,
+		});
 
-		const conversations = await getConversations({ userId });
-		if (!conversations)
-			return next(new Errors(AppModels.conversation).Not_found);
-
-		const response = new AppResponse(
-			ResStatus.OK,
-			conversations,
-			"Conversations g successfully"
-		);
-		sendResponse(response, res);
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	getConversation: expressAsyncHandler(async (req, res, next) => {
+	listConversations: expressAsyncHandler(async (req, res, next) => {
 		const { id: user } = req.user as AuthPayload;
+
+		const result = await useCases.getConversations({
+			user,
+			setting: req.query,
+		});
+
+		SendErorrOrResponse(result, res, next);
+	}),
+
+	changeConversationTyped: expressAsyncHandler(async (req, res, next) => {
+		const { id: owner } = req.user as AuthPayload;
 		const id = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const conversation = await getConversationById({ id, user });
-		if (!conversation)
-			return next(new Errors(AppModels.conversation).Not_found);
+		const result = await useCases.changeConversationType({
+			id,
+			owner,
+		});
 
-		const response = new AppResponse(
-			ResStatus.OK,
-			conversation,
-			"Conversations gotten successfully"
-		);
-		sendResponse(response, res);
+		SendErorrOrResponse(result, res, next);
 	}),
 };
 
