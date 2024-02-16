@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 
-import { AppERROR, AppResponse, sendRes } from "../../../utils";
+import { AppERROR, AppResponse, sendResponse } from "../../../utils";
 import {
 	AppModels,
 	ErrorMessage,
@@ -29,15 +29,15 @@ const controller = {
 			);
 
 		const response = new AppResponse(ResStatus.OK, { posts: posts });
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 	getMyPosts: expressAsyncHandler(async (req, res, next) => {
 		const { id } = <AuthPayload>req.user;
-		const posts = await getUserPosts(req.query,id);
+		const posts = await getUserPosts(req.query, id);
 		if (!posts) return next(new Errors(AppModels.post).Not_found);
 
 		const response = new AppResponse(ResStatus.OK, posts);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	post: expressAsyncHandler(async (req, res, next) => {
@@ -56,7 +56,7 @@ const controller = {
 			created,
 			"Post created successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	like: expressAsyncHandler(async (req, res, next) => {
@@ -74,7 +74,7 @@ const controller = {
 			{},
 			"Post liked successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 	unlike: expressAsyncHandler(async (req, res, next) => {
 		const id = req.params.id;
@@ -91,7 +91,7 @@ const controller = {
 			{},
 			"Post unliked successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	edit: expressAsyncHandler(async (req, res, next) => {
@@ -110,7 +110,7 @@ const controller = {
 			updated,
 			"Post updated successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 
 	delete: expressAsyncHandler(async (req, res, next) => {
@@ -128,7 +128,7 @@ const controller = {
 			{},
 			"Post deleted successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 };
 

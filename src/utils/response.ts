@@ -26,7 +26,7 @@ export class AppResponse {
 	}
 }
 
-export const sendRes = (response: AppResponse, res: Response) => {
+export const sendResponse = (response: AppResponse, res: Response) => {
 	return res.status(response.statusCode).json({
 		status: response.status,
 		message: response.message,

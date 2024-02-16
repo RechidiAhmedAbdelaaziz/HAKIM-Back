@@ -1,7 +1,7 @@
 import { AuthPayload } from "./../../auth/dio/auth";
 import expressAsyncHandler from "express-async-handler";
 
-import { AppERROR, AppResponse, sendRes } from "../../../utils";
+import { AppERROR, AppResponse, sendResponse } from "../../../utils";
 import {
 	AppModels,
 	ErrorMessage,
@@ -47,7 +47,7 @@ const controller = {
 			{ comment: created },
 			"Comment added successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 	remove: expressAsyncHandler(async (req, res, next) => {
 		const { id } = req.params;
@@ -74,7 +74,7 @@ const controller = {
 			{},
 			"Comment deleted successfully"
 		);
-		sendRes(response, res);
+		sendResponse(response, res);
 	}),
 };
 

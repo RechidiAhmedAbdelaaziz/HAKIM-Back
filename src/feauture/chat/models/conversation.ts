@@ -3,6 +3,7 @@ import { AppModels } from "../../../constants";
 
 export interface ConversationDoc extends Document {
 	users: Schema.Types.ObjectId[];
+	messages: Schema.Types.ObjectId[];
 }
 
 const schema = new Schema(

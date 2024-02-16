@@ -4,6 +4,7 @@ import { AppModels } from "../../../constants";
 export interface MessageDoc extends Document {
 	sender: Schema.Types.ObjectId;
 	receiver: Schema.Types.ObjectId;
+	chat: Schema.Types.ObjectId;
 	text: String;
 }
 
@@ -20,7 +21,11 @@ const schema = new Schema(
 			ref: AppModels.user,
 			required: true,
 		},
-		chat: { type: Schema.Types.ObjectId, ref: AppModels.conversation },
+		chat: {
+			type: Schema.Types.ObjectId,
+			ref: AppModels.conversation,
+			required: true,
+		},
 	},
 	{ timestamps: true }
 );
