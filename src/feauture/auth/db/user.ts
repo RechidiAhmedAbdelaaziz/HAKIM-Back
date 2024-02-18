@@ -21,6 +21,7 @@ export const updateUser = async (info: UpdateUserDio): Promise<any> => {
 		isVerified,
 		name,
 		pic,
+		isOnline,
 	} = info;
 
 	if (info.password) info.password = cryptPass(info.password);
@@ -33,6 +34,7 @@ export const updateUser = async (info: UpdateUserDio): Promise<any> => {
 		name,
 		password: info.password,
 		pic,
+		isOnline,
 	});
 	return user;
 };

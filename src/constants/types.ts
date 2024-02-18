@@ -15,6 +15,8 @@ export enum AppModels {
 
 	conversation = "Conversation",
 	message = "Message",
+
+	notification = "Notification",
 }
 
 export enum userRole {

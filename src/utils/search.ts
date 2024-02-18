@@ -27,10 +27,3 @@ function generateSearchQuerys(
 
 	return { $or: searchConditions };
 }
-
-// Example usage
-const searchFields = ["title", "description"];
-const keyword = "example";
-
-const searchQuery = generateSearchQuery(searchFields, keyword);
-console.log(searchQuery);

@@ -1,12 +1,13 @@
-import expressAsyncHandler from "express-async-handler";
 import { Schema } from "mongoose";
 import { Errors, ResStatus } from "../../../constants";
-import { AppERROR, AppResponse, sendResponse } from "../../../utils";
-import { AuthPayload } from "../../auth/dio/auth";
+import { AppResponse } from "../../../utils";
 import { Conversation, ConversationTypes } from "../models/conversation";
 import { Message } from "../models/message";
 import { User } from "../../auth/models";
 import { UseCase } from "../../../utils/types/usecases";
+import { Socket } from "socket.io";
+import { EVENTS } from "../../../config/socket.events";
+import { onlineUsers } from "../../../service/sockect.service";
 
 interface Params {
 	sender: Schema.Types.ObjectId;
@@ -53,4 +54,13 @@ export const sendMessage: UseCase<Params> = async (params) => {
 	);
 
 	return { response };
+};
+
+export const OnSendMessage = async (socket: Socket) => {
+	socket.on(EVENTS.SERVER.SEND_MESSAGE, async (data: Params) => {
+		await sendMessage(data);
+		socket
+			.to(onlineUsers[`${data.receiver}`])
+			.emit(EVENTS.CLIENT.NEW_MESSAGE, data);
+	});
 };

@@ -9,4 +9,5 @@ export interface UpdateUserDio {
 	isVerified?: boolean;
 	pushAppointment?: Schema.Types.ObjectId;
     pullAppointment?: Schema.Types.ObjectId;
+	isOnline?: boolean;
 }

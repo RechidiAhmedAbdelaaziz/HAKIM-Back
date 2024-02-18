@@ -11,6 +11,7 @@ export interface UserDoc extends Document {
 	isVerified: boolean;
 	patient: { appointments: Schema.Types.ObjectId[] };
 	posts: Schema.Types.ObjectId[];
+	isOnline: boolean;
 }
 
 const schema = new Schema(
@@ -21,6 +22,7 @@ const schema = new Schema(
 		password: { type: String, required: true },
 		kind: { type: String, required: true, default: AppModels.patient },
 		isVerified: { type: Boolean, default: false },
+		isOnline: { type: Boolean, default: false },
 	},
 	{ timestamps: true, discriminatorKey: "kind" }
 );
