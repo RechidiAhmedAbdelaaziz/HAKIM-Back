@@ -26,7 +26,7 @@ class ModelsGetter<T> {
 	query: Query<T[], T>;
 	queryString: any; // Change the type accordingly
 
-	paginationResults: Pagination | undefined;
+	pagination: Pagination | undefined;
 
 	constructor(monogosQuery: Query<T[], T>, queryString: any) {
 		this.query = monogosQuery;
@@ -84,25 +84,25 @@ class ModelsGetter<T> {
 		const skip = (page - 1) * limit;
 		const endIndex = page * limit;
 
-		const pagination: Pagination = {
+		const pagination_: Pagination = {
 			currentPage: page,
 			pagesNumber: Math.ceil(countDocuments / limit),
 		};
 
 		if (endIndex < countDocuments) {
-			pagination.next = page + 1;
-			pagination.length = limit;
+			pagination_.next = page + 1;
+			pagination_.length = limit;
 		} else {
-			pagination.length = countDocuments - endIndex;
-			if (pagination.length < 0) pagination.length = countDocuments;
+			pagination_.length = countDocuments - endIndex;
+			if (pagination_.length < 0) pagination_.length = countDocuments;
 		}
 		if (skip > 0) {
-			pagination.previous = page - 1;
+			pagination_.previous = page - 1;
 		}
 
 		this.query = this.query.skip(skip).limit(limit);
 
-		this.paginationResults = pagination;
+		this.pagination = pagination_;
 
 		return this;
 	}

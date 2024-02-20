@@ -16,7 +16,7 @@ export const getConversations: UseCase<Params> = async (params) => {
 	const { user, setting } = params;
 
 	//Make query
-	const { query, paginationResults: pagination } = new ModelsGetter(
+	const { query, pagination } = new ModelsGetter(
 		Conversation.find().sort({ updatedAt: -1 }),
 		setting
 	)

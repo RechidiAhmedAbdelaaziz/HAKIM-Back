@@ -4,7 +4,14 @@ import morgan from "morgan";
 import path from "path";
 import errorHandler from "../middlewares/error.handler";
 import { AppERROR } from "../utils";
-import { ApppointmentRouter, AuthRouter, ConversationRouter, PostRouter, QuestionRouter } from "../router";
+import {
+	ApppointmentRouter,
+	AuthRouter,
+	ConversationRouter,
+	PostRouter,
+	QuestionRouter,
+	DonationRouter,
+} from "../router";
 import { verifyAccount } from "../utils/email.utils";
 import { ErrorStatus } from "../constants";
 
@@ -19,6 +26,8 @@ export const App = async (app: Application) => {
 	app.use("/api/v1/posts", PostRouter);
 	app.use("/api/v1/questions", QuestionRouter);
 	app.use("/api/v1/chats", ConversationRouter);
+	app.use("/api/v1/donations", DonationRouter);
+
 	app.get("/verify/:id", verifyAccount);
 
 	app.all("*", (req, res, next) => {

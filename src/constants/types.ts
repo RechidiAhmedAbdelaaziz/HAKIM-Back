@@ -17,6 +17,8 @@ export enum AppModels {
 	message = "Message",
 
 	notification = "Notification",
+
+	donation = "Donation",
 }
 
 export enum userRole {

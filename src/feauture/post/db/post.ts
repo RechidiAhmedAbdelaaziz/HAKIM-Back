@@ -17,7 +17,10 @@ export const createPost = async (info: CreatePostDio): Promise<any> => {
 export const getPosts = async (
 	reqQuery: any
 ): Promise<ModelsGetterReturn<PostDoc[]>> => {
-	const { query, paginationResults } = new ModelsGetter(Post.find(), reqQuery)
+	const { query, pagination: paginationResults } = new ModelsGetter(
+		Post.find(),
+		reqQuery
+	)
 		.sort()
 		.paginate(await Post.countDocuments({}));
 
@@ -28,7 +31,10 @@ export const getUserPosts = async (
 	reqQuery: any,
 	userId: Schema.Types.ObjectId
 ): Promise<ModelsGetterReturn<PostDoc[]>> => {
-	const { query, paginationResults } = new ModelsGetter(Post.find(), reqQuery)
+	const { query, pagination: paginationResults } = new ModelsGetter(
+		Post.find(),
+		reqQuery
+	)
 		.select({ poster: userId })
 		.sort()
 		.search(["post"])

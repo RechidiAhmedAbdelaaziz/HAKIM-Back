@@ -19,7 +19,7 @@ export const getMessages: UseCase<Params> = async (params) => {
 	const checkConversation = await Conversation.findById(conversation);
 	if (!checkConversation) return { error: Errors.No_Model("Conversation") };
 
-	const { query, paginationResults } = new ModelsGetter(
+	const { query, pagination: paginationResults } = new ModelsGetter(
 		Message.find().sort({ createdAt: -1 }),
 		setting
 	)

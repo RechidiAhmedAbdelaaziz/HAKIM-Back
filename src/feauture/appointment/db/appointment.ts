@@ -38,7 +38,7 @@ export const getPatientAppoinments = async (
 	queryString?: any
 ): Promise<ModelsGetterReturn<AppointmentDoc[]>> => {
 	const query_ = new ModelsGetter(Appointment.find(), queryString);
-	const { query, paginationResults } = query_
+	const { query, pagination: paginationResults } = query_
 		.select({ patient: patientId })
 		.sort()
 		.fields()
@@ -57,7 +57,7 @@ export const getDoctorAppoinments = async (
 	queryString?: any
 ): Promise<ModelsGetterReturn<any>> => {
 	const query_ = new ModelsGetter(Appointment.find(), queryString);
-	const { query, paginationResults } = query_
+	const { query, pagination: paginationResults } = query_
 		.select({ doctor: patientId })
 		.sort()
 		.fields()
