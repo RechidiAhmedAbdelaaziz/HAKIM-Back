@@ -7,7 +7,7 @@ export interface DoctorDoc extends UserDoc {
 	location: Schema.Types.ObjectId[];
 	phone: Schema.Types.ObjectId[];
 	points: number;
-	drAppointments: Schema.Types.ObjectId[];
+	worktime: Date[];
 }
 
 const schema = new Schema(

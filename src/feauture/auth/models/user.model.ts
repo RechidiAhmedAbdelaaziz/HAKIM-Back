@@ -9,22 +9,40 @@ export interface UserDoc extends Document {
 	kind: string;
 	pic: string;
 	isVerified: boolean;
-	patient: { appointments: Schema.Types.ObjectId[] };
-	posts: Schema.Types.ObjectId[];
 	isOnline: boolean;
 	birthday: Date;
+	gender: "Male" | "Female";
+	medicalRecord: {
+		allergies: String[];
+		chronicDiseases: String[];
+	};
+	documents: {
+		title: String;
+		link: String;
+	}[];
 }
 
 const schema = new Schema(
 	{
 		name: { type: String, required: true },
 		pic: { type: String, default: "IMGurl" },
+		gender: { type: String, enum: ["Male", "Female"] },
 		email: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
 		kind: { type: String, required: true, default: AppModels.patient },
 		isVerified: { type: Boolean, default: false },
 		isOnline: { type: Boolean, default: false },
-		birthday: { type: Date },
+		birthday: { type: Date, required: true },
+		medicalRecord: {
+			allergies: [String],
+			chronicDiseases: [String],
+		},
+		documents: [
+			{
+				title: { type: String, required: true },
+				link: { type: String, required: true },
+			},
+		],
 	},
 	{ timestamps: true, discriminatorKey: "kind" }
 );

@@ -3,6 +3,7 @@ export enum AppModels {
 	doctor = "Doctor",
 	patient = "Patient",
 	verifEmail = "verifEmail",
+	relation = "Relation",
 
 	post = "Post",
 	comment = "Comment",
