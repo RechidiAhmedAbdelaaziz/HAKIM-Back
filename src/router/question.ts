@@ -1,25 +1,31 @@
 import express from "express";
-import { QuestionController as question } from "../feauture/question/controller/question";
-import { verifyAuthorization, verifyDoctor } from "../middlewares";
+import {
+	QuestionController as question,
+	AnswerController as answer,
+} from "../feauture/question/controller";
+import { isUserKind, verifyAuthorization } from "../middlewares";
 
 const router = express.Router();
 
 router.use(verifyAuthorization);
 
-router.route("/").get(question.getAllQues).post(question.ask);
+router.route("/").get(question.listAll).post(question.create);
+
 router
 	.route("/:id")
-	.get(question.getQues)
-	.post(question.editQues)
-	.delete(question.deleteQues);
+	.get(question.getById)
+	.post(question.update)
+	.delete(question.delete);
+
 router
-	.route("/:id/answer")
-	.get(question.getAllAnswr)
-	.post(verifyDoctor, question.answer);
+	.route("/:id/answers")
+	.get(answer.listAll)
+	.post(isUserKind.Doctor, answer.create);
+
 router
-	.route("/answer/:id")
-	.get(question.getAnswr)
-	.post(question.editAnswr)
-	.delete(question.deleteAnswr);
+	.route("/answers/:id")
+	.get(answer.getById)
+	.post(answer.update)
+	.delete(answer.delete);
 
 export { router as QuestionRouter };
