@@ -1,5 +1,5 @@
 import express from "express";
-import { checkUserType, verifyAuthorization } from "../middlewares";
+import { isUserKind, verifyAuthorization } from "../middlewares";
 import { AuthController as controller } from "../feauture/auth/controller/auth";
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 router
 	.route("/")
 	.post(controller.login)
-	.get(checkUserType.Patient, controller.showMyProfile);
+	.get(isUserKind.Patient, controller.showMyProfile);
 router.post("/signup", controller.signUp);
 router.post("/signup-dr", controller.createDoctorProfile);
 router.get("/:id", verifyAuthorization, controller.showMyProfile);

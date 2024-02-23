@@ -16,7 +16,7 @@ export const verifyAuthorization = expressAsyncHandler((req, res, next) => {
 	});
 });
 
-export const checkUserType = {
+export const isUserKind = {
 	Patient: expressAsyncHandler((req, res, next) => {
 		return validSign(req, res, () => {
 			const user = <AuthPayload>req.user;
