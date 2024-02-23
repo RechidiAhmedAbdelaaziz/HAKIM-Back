@@ -11,6 +11,7 @@ export class AppResponse {
 	statusCode: number;
 	data?: object;
 	message?: string;
+	token?: string;
 	pagination?: Pagination | null;
 	constructor(
 		statusCode: number,
@@ -19,6 +20,7 @@ export class AppResponse {
 	) {
 		this.statusCode = statusCode;
 		this.pagination = data.pagination;
+		this.token = data.token;
 		if (data.result) this.data = data.result;
 		else this.data = data;
 
@@ -30,6 +32,7 @@ export const sendResponse = (response: AppResponse, res: Response) => {
 	return res.status(response.statusCode).json({
 		status: response.status,
 		message: response.message,
+		token: response.token,
 		pagination: response.pagination,
 		data: response.data,
 		code: response.statusCode,

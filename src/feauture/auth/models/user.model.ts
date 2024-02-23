@@ -1,12 +1,11 @@
 import { Document, Schema, model } from "mongoose";
 import { AppModels } from "../../../constants";
-import { DoctorDoc } from ".";
 
 export interface UserDoc extends Document {
 	name: string;
 	email: string;
 	password: string;
-	kind: string;
+	kind: "Doctor" | "Patient";
 	pic: string;
 	isVerified: boolean;
 	isOnline: boolean;
@@ -25,14 +24,29 @@ export interface UserDoc extends Document {
 const schema = new Schema(
 	{
 		name: { type: String, required: true },
-		pic: { type: String, default: "IMGurl" },
-		gender: { type: String, enum: ["Male", "Female"] },
 		email: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
+		info: {
+			pic: { type: String, default: "IMGurl" },
+			gender: { type: String, enum: ["Male", "Female"] },
+			birthday: { type: Date, required: true },
+			age: { type: Number, required: true },
+			blood: {
+				type: String,
+				enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+				required: true,
+			},
+			tall: { type: Number, required: true },
+			weight: { type: Number, required: true },
+		},
 		kind: { type: String, required: true, default: AppModels.patient },
 		isVerified: { type: Boolean, default: false },
 		isOnline: { type: Boolean, default: false },
-		birthday: { type: Date, required: true },
+		patientCard: {
+			Diagnosis: [String],
+			Prescriptions: [String],
+			Notes: [String],
+		},
 		medicalRecord: {
 			allergies: [String],
 			chronicDiseases: [String],

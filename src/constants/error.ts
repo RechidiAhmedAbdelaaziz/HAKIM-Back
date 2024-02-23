@@ -24,8 +24,18 @@ export class Errors {
 		ErrorStatus.Un_Authorized
 	);
 
-
-
+	static Used_EmailOrPhone = new AppERROR(
+		ErrorMessage.Login_Used,
+		ErrorStatus.Conflict
+	);
+	static Wrong_Login = new AppERROR(
+		ErrorMessage.Login_Not_Found,
+		ErrorStatus.Conflict
+	);
+	static Wrong_Password = new AppERROR(
+		ErrorMessage.Wrong_password,
+		ErrorStatus.Conflict
+	);
 
 	static Genric = new AppERROR(
 		`${ErrorMessage.Generic}`,
