@@ -1,5 +1,5 @@
 export * from "./error";
-export * from "./auth.handler";
+export * from "../feauture/auth/helpers/auth.handler";
 export * from "./response";
 export * from "./types/usecases";
 export * from "./email.utils";

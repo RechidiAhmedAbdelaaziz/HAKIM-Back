@@ -1,12 +1,11 @@
 import Jwt from "jsonwebtoken";
 import crypto from "crypto-js";
 import expressAsyncHandler from "express-async-handler";
-import { AppERROR } from ".";
-import { Types, Document } from "mongoose";
+import { AppERROR } from "../../../utils";
+import { Types, Document, Schema } from "mongoose";
 
-import { AppModels, ErrorMessage, ErrorStatus } from "../constants";
-import { AuthPayload } from "../feauture/auth/dio/auth";
-import { UserDoc, User } from "../feauture/auth/models";
+import { AppModels, ErrorMessage, ErrorStatus } from "../../../constants";
+import { UserDoc, User } from "../models";
 
 export const cryptPass = (passwd: string) => {
 	return crypto.AES.encrypt(passwd, process.env.SECRET!).toString();
@@ -16,6 +15,13 @@ export const decryptPass = (passwd: string) => {
 	const decryptedPasswd = crypto.AES.decrypt(passwd, process.env.SECRET!);
 	return decryptedPasswd.toString(crypto.enc.Utf8);
 };
+
+export interface AuthPayload {
+	id: Schema.Types.ObjectId;
+	kind: "Doctor" | "Patient";
+	email: string;
+	name: string;
+}
 
 export const genrateSign = (
 	user: Document<unknown, object, UserDoc> &
@@ -30,7 +36,7 @@ export const genrateSign = (
 		name: user.name,
 	};
 	return Jwt.sign(payload, process.env.JWT_SECRET!, {
-		expiresIn: "15d",
+		expiresIn: "5d",
 	});
 };
 

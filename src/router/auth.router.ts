@@ -1,16 +1,15 @@
 import express from "express";
-import { verifyAuthorization } from "../middlewares";
-import {
-	getPorfile,
-	SignUp,
-	DoctorSignUp,
-	login,
-} from "../feauture/auth/controller/auth.controller";
+import { checkUserType, verifyAuthorization } from "../middlewares";
+import { AuthController as controller } from "../feauture/auth/controller/auth";
 
 const router = express.Router();
 
-router.route("/").post(login).get(verifyAuthorization, getPorfile);
-router.post("/signup", SignUp);
-router.post("/signup-dr", DoctorSignUp);
+router
+	.route("/")
+	.post(controller.login)
+	.get(checkUserType.Patient, controller.showMyProfile);
+router.post("/signup", controller.signUp);
+router.post("/signup-dr", controller.createDoctorProfile);
+router.get("/:id", verifyAuthorization, controller.showMyProfile);
 
 export { router as AuthRouter };
