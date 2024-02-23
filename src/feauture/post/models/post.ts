@@ -2,7 +2,7 @@ import { Document, Schema, model } from "mongoose";
 import { AppModels } from "../../../constants";
 
 export interface PostDoc extends Document {
-	post: string;
+	text: string;
 	poster: Schema.Types.ObjectId;
 	likers: Schema.Types.ObjectId[];
 	comments: Schema.Types.ObjectId[];
@@ -10,7 +10,7 @@ export interface PostDoc extends Document {
 
 const schema = new Schema(
 	{
-		post: { type: String, required: true },
+		text: { type: String, required: true },
 		poster: {
 			type: Schema.Types.ObjectId,
 			ref: AppModels.user,
@@ -23,10 +23,3 @@ const schema = new Schema(
 );
 
 export const Post = model<PostDoc>(AppModels.post, schema);
-
-export type PostType =
-	| (Document<unknown, object, PostDoc> &
-			PostDoc & {
-				_id: Schema.Types.ObjectId;
-			})
-	| null;

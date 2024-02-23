@@ -7,6 +7,7 @@ export enum AppModels {
 
 	post = "Post",
 	comment = "Comment",
+	like = "like",
 
 	question = "Question",
 	answer = "Answer",

@@ -10,7 +10,7 @@ export interface CommentDoc extends Document {
 
 const schema = new Schema(
 	{
-		comment: { type: String, required: true },
+		text: { type: String, required: true },
 		commentator: {
 			type: Schema.Types.ObjectId,
 			ref: AppModels.user,
@@ -20,6 +20,7 @@ const schema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: AppModels.post,
 			required: true,
+			index: true,
 		},
 		replys: [{ type: Schema.Types.ObjectId, ref: AppModels.comment }],
 	},
@@ -28,9 +29,3 @@ const schema = new Schema(
 
 export const Comment = model<CommentDoc>(AppModels.comment, schema);
 
-export type CommentType =
-	| (Document<unknown, object, CommentDoc> &
-			CommentDoc & {
-				_id: Schema.Types.ObjectId;
-			})
-	| null;

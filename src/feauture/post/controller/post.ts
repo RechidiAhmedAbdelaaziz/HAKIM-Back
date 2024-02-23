@@ -1,134 +1,62 @@
 import expressAsyncHandler from "express-async-handler";
-
-import { AppERROR, AppResponse, sendResponse } from "../../../utils";
-import {
-	AppModels,
-	ErrorMessage,
-	ErrorStatus,
-	Errors,
-	ResStatus,
-} from "../../../constants";
-import { User } from "../../auth/models";
-import { AuthPayload } from "../../auth/dio/auth";
-import { deleteComment } from "../db/comment";
-import {
-	getPosts,
-	getUserPosts,
-	createPost,
-	updatePost,
-	deletePost,
-} from "../db/post";
-import { CreatePostDio, UpdatePostDio } from "../dio/post";
+import { useCases } from "../usecases";
+import { AuthPayload, SendErorrOrResponse } from "../../../utils";
+import { Schema } from "mongoose";
 
 const controller = {
-	getAll: expressAsyncHandler(async (req, res, next) => {
-		const posts = await getPosts(req.query);
-		if (!posts)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
+	getById: expressAsyncHandler(async (req, res, next) => {
+		const { id: poster } = <AuthPayload>req.user;
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const response = new AppResponse(ResStatus.OK, { posts: posts });
-		sendResponse(response, res);
-	}),
-	getMyPosts: expressAsyncHandler(async (req, res, next) => {
-		const { id } = <AuthPayload>req.user;
-		const posts = await getUserPosts(req.query, id);
-		if (!posts) return next(new Errors(AppModels.post).Not_found);
-
-		const response = new AppResponse(ResStatus.OK, posts);
-		sendResponse(response, res);
+		const result = await useCases.getPostById({ id, poster });
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	post: expressAsyncHandler(async (req, res, next) => {
-		const { post } = <CreatePostDio>req.body;
-		const user = <AuthPayload>req.user;
+	create: expressAsyncHandler(async (req, res, next) => {
+		const { id: poster } = <AuthPayload>req.user;
+		const { text } = req.body;
 
-		const created = await createPost({ post, poster: user.id });
-		if (!created)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
-		await User.findByIdAndUpdate(user.id, { $push: { posts: created } });
-
-		const response = new AppResponse(
-			ResStatus.OK,
-			created,
-			"Post created successfully"
-		);
-		sendResponse(response, res);
+		const result = await useCases.createPost({ poster, text });
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	like: expressAsyncHandler(async (req, res, next) => {
-		const id = req.params.id;
-		const user = <AuthPayload>req.user;
+	update: expressAsyncHandler(async (req, res, next) => {
+		const { id: poster } = <AuthPayload>req.user;
+		const { text } = req.body;
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const updated = await updatePost({ pushLike: user.id, id });
-		if (!updated)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
-
-		const response = new AppResponse(
-			ResStatus.OK,
-			{},
-			"Post liked successfully"
-		);
-		sendResponse(response, res);
-	}),
-	unlike: expressAsyncHandler(async (req, res, next) => {
-		const id = req.params.id;
-		const user = <AuthPayload>req.user;
-
-		const updated = await updatePost({ pullLike: user.id, id });
-		if (!updated)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
-
-		const response = new AppResponse(
-			ResStatus.OK,
-			{},
-			"Post unliked successfully"
-		);
-		sendResponse(response, res);
-	}),
-
-	edit: expressAsyncHandler(async (req, res, next) => {
-		const id = req.params.id;
-		const user = <AuthPayload>req.user;
-		const { post } = <UpdatePostDio>req.body;
-
-		const updated = await updatePost({ posterId: user.id, id, post });
-		if (!updated)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
-
-		const response = new AppResponse(
-			ResStatus.OK,
-			updated,
-			"Post updated successfully"
-		);
-		sendResponse(response, res);
+		const result = await useCases.updatePost({ id, poster, text });
+		SendErorrOrResponse(result, res, next);
 	}),
 
 	delete: expressAsyncHandler(async (req, res, next) => {
 		const { id: poster } = <AuthPayload>req.user;
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const post = await deletePost(req.params.id, poster);
-		if (!post) return next(new Errors(AppModels.post).Not_found);
+		const result = await useCases.deletePost({ id, poster });
+		SendErorrOrResponse(result, res, next);
+	}),
 
-		post.comments.forEach(async (e) => {
-			await deleteComment(e);
+	listForUser: expressAsyncHandler(async (req, res, next) => {
+		const id = req.params.id as unknown as
+			| Schema.Types.ObjectId
+			| undefined;
+		const user = <AuthPayload>req.user;
+
+		const poster = id || user.id;
+
+		const result = await useCases.listUserPosts({
+			poster,
+			queries: req.query,
 		});
+		SendErorrOrResponse(result, res, next);
+	}),
 
-		const response = new AppResponse(
-			ResStatus.OK,
-			{},
-			"Post deleted successfully"
-		);
-		sendResponse(response, res);
+	listAllPosts: expressAsyncHandler(async (req, res, next) => {
+		const result = await useCases.listPosts({
+			queries: req.query,
+		});
+		SendErorrOrResponse(result, res, next);
 	}),
 };
 

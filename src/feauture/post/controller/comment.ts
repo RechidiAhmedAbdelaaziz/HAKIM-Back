@@ -1,80 +1,52 @@
-import { AuthPayload } from "./../../auth/dio/auth";
 import expressAsyncHandler from "express-async-handler";
-
-import { AppERROR, AppResponse, sendResponse } from "../../../utils";
-import {
-	AppModels,
-	ErrorMessage,
-	ErrorStatus,
-	Errors,
-	ResStatus,
-} from "../../../constants";
-import { addComment, getComment, deleteOwnComment } from "../db/comment";
-import { getPost, updatePost } from "../db/post";
-import { CreateCommentDio } from "../dio/comment";
+import { useCases } from "../usecases";
+import { Schema } from "mongoose";
+import { AuthPayload, SendErorrOrResponse } from "../../../utils";
 
 const controller = {
-	comment: expressAsyncHandler(async (req, res, next) => {
-		const { comment } = <CreateCommentDio>req.body;
-		const { id } = req.params;
-		const user = <AuthPayload>req.user;
+	getById: expressAsyncHandler(async (req, res, next) => {
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
 
-		if (!comment || !user || !id)
-			return next(
-				new AppERROR(ErrorMessage.Generic, ErrorStatus.Bad_Request)
-			);
-		if (!(await getPost(id)))
-			return next(
-				new AppERROR(
-					`Post ${ErrorMessage.Not_Found}`,
-					ErrorStatus.Not_Found
-				)
-			);
-
-		const created = await addComment({
-			comment,
-			commentator: user.id,
-			post: id,
-		});
-		if (!created)
-			return next(
-				new AppERROR(ErrorMessage.Generic, ErrorStatus.Bad_Gateway)
-			);
-		await updatePost({ pushComment: created._id, id });
-
-		const response = new AppResponse(
-			ResStatus.OK,
-			{ comment: created },
-			"Comment added successfully"
-		);
-		sendResponse(response, res);
+		const result = await useCases.getCommentById({ id });
+		SendErorrOrResponse(result, res, next);
 	}),
-	remove: expressAsyncHandler(async (req, res, next) => {
-		const { id } = req.params;
-		const user = <AuthPayload>req.user;
-		if (!user || !id)
-			return next(
-				new AppERROR(ErrorMessage.Generic, ErrorStatus.Bad_Request)
-			);
 
-		if (!(await getComment(id)))
-			return next(
-				new AppERROR(
-					`Comment ${ErrorMessage.Not_Found}`,
-					ErrorStatus.Not_Found
-				)
-			);
+	create: expressAsyncHandler(async (req, res, next) => {
+		const { id: commentator } = <AuthPayload>req.user;
+		const post = req.params.id as unknown as Schema.Types.ObjectId;
+		const { text } = req.body;
 
-		const comment = await deleteOwnComment(id, user.id);
-		if (!comment) return next(new Errors(AppModels.comment).Not_found);
-		await updatePost({ pullComment: id, id: comment.post });
+		const result = await useCases.createComment({
+			commentator,
+			post,
+			text,
+		});
+		SendErorrOrResponse(result, res, next);
+	}),
 
-		const response = new AppResponse(
-			ResStatus.OK,
-			{},
-			"Comment deleted successfully"
-		);
-		sendResponse(response, res);
+	update: expressAsyncHandler(async (req, res, next) => {
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
+		const { text } = req.body;
+
+		const result = await useCases.updateComment({ id, text });
+		SendErorrOrResponse(result, res, next);
+	}),
+
+	delete: expressAsyncHandler(async (req, res, next) => {
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
+
+		const result = await useCases.deleteComment({ id });
+		SendErorrOrResponse(result, res, next);
+	}),
+
+	listComments: expressAsyncHandler(async (req, res, next) => {
+		const post = req.params.id as unknown as Schema.Types.ObjectId;
+
+		const result = await useCases.listPostComments({
+			post,
+			queries: req.query,
+		});
+		SendErorrOrResponse(result, res, next);
 	}),
 };
 
