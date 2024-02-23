@@ -1,134 +1,60 @@
 import expressAsyncHandler from "express-async-handler";
-
-import {
-	AppModels,
-	ErrorMessage,
-	ErrorStatus,
-	Errors,
-	ResStatus,
-} from "../../../constants";
-import { AppERROR, AppResponse, sendResponse } from "../../../utils";
-import { Applogger } from "../../../service";
-import { AuthPayload } from "../../auth/dio/auth";
-import { User, Doctor } from "../../auth/models";
-import {
-	createAppointment,
-	getAppointment,
-	updateAppointment,
-	deleteAppointment,
-	getDoctorAppoinments,
-	getPatientAppoinments,
-} from "../db/appointment";
-import { CreateAppointmentDio } from "../dio/appointment";
-import { AppointmentDoc } from "../models/appointment";
+import { AuthPayload, SendErorrOrResponse } from "../../../utils";
+import { useCases } from "../usecases";
+import { AppModels } from "../../../constants";
+import { Schema } from "mongoose";
 
 const controller = {
 	create: expressAsyncHandler(async (req, res, next) => {
-		const { date, type, patient } = <CreateAppointmentDio>req.body;
+		const { id: doctor } = <AuthPayload>req.user;
+		const { date, patient, type } = req.body;
 
-		const { id } = <AuthPayload>req.user;
-
-		const checkUser = await User.findById(patient);
-		if (!checkUser)
-			return next(
-				new AppERROR(ErrorMessage.Generic, ErrorStatus.Bad_Gateway)
-			);
-
-		const appointment = await createAppointment({
+		const result = await useCases.CreateAppointment({
 			date,
-			doctor: id,
-			type,
+			doctor,
 			patient,
+			type,
 		});
-		if (!appointment)
-			return next(
-				new AppERROR(ErrorMessage.Generic, ErrorStatus.Bad_Gateway)
-			);
-
-		await checkUser.updateOne({
-			$push: { "patient.appointments": appointment },
-		});
-		await Doctor.findByIdAndUpdate(id, {
-			$push: { appointments: appointment },
-		});
-
-		const Response = new AppResponse(
-			ResStatus.OK,
-			{ appointment },
-			"Appointment created successfully"
-		);
-		sendResponse(Response, res);
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	get: expressAsyncHandler(async (req, res, next) => {
-		const { id } = <AuthPayload>req.user;
-		const AppointmentId = req.params.id;
+	listAppointments: expressAsyncHandler(async (req, res, next) => {
+		const { id, kind } = <AuthPayload>req.user;
+		const { date } = req.body;
 
-		const appointment = await getAppointment(AppointmentId, id);
-		if (!appointment)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
+		const check = {};
+		check[kind] = id;
 
-		const Response = new AppResponse(ResStatus.OK, { appointment });
-		sendResponse(Response, res);
+		const result = await useCases.listAppointments({
+			date,
+			doctor: check["Doctor"],
+			patient: check["Patient"],
+			queries: req.query,
+		});
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	getAll: expressAsyncHandler(async (req, res, next) => {
-		const { kind } = <AuthPayload>req.user;
-		if (kind === AppModels.doctor) return getDoctor(req, res, next);
-		return getPatient(req, res, next);
+	getById: expressAsyncHandler(async (req, res, next) => {
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
+
+		const result = await useCases.GetAppointmentById({ id });
+		SendErorrOrResponse(result, res, next);
 	}),
 
 	reschedule: expressAsyncHandler(async (req, res, next) => {
-		const id = req.params.id;
-		const { date } = <AppointmentDoc>req.body;
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
+		const { date } = req.body;
 
-		const appointment = await updateAppointment(id, { date });
-		if (!appointment)
-			return next(
-				new AppERROR(ErrorMessage.Not_Found, ErrorStatus.Not_Found)
-			);
-
-		const Response = new AppResponse(
-			ResStatus.OK,
-			{ appointment },
-			"Appointment rescheduled"
-		);
-		sendResponse(Response, res);
+		const result = await useCases.RescheduleAppointment({ id, date });
+		SendErorrOrResponse(result, res, next);
 	}),
 
-	cancel: expressAsyncHandler(async (req, res) => {
-		const id = req.params.id;
-		Applogger.warn(id);
-		await deleteAppointment(id);
+	cancel: expressAsyncHandler(async (req, res, next) => {
+		const id = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const Response = new AppResponse(
-			ResStatus.OK,
-			{},
-			"Appointment canceld"
-		);
-		sendResponse(Response, res);
+		const result = await useCases.CancelAppointment({ id });
+		SendErorrOrResponse(result, res, next);
 	}),
 };
 
 export { controller as AppointmentController };
-
-const getDoctor = expressAsyncHandler(async (req, res, next) => {
-	const { id } = <AuthPayload>req.user;
-	const appointments = await getDoctorAppoinments(id, req.query);
-	if (!appointments) return next(new Errors(AppModels.appointment).Not_found);
-
-	const Response = new AppResponse(ResStatus.OK, appointments);
-	sendResponse(Response, res);
-});
-
-const getPatient = expressAsyncHandler(async (req, res, next) => {
-	const { id } = <AuthPayload>req.user;
-
-	const appointments = await getPatientAppoinments(id, req.query);
-	if (!appointments) return next(new Errors(AppModels.appointment).Not_found);
-
-	const Response = new AppResponse(ResStatus.OK, appointments);
-	sendResponse(Response, res);
-});
