@@ -10,10 +10,11 @@ interface Params {
 export const deleteQuestion: UseCase<Params> = async (params) => {
 	const { id } = params;
 
-	const question = await Question.findByIdAndDelete(id);
+	const question = await Question.findById(id);
 	if (!question) return { error: Errors.Genric };
 
 	await Answer.deleteMany({ question: id });
+	await question.deleteOne();
 
 	const response = new AppResponse(ResStatus.No_Content);
 	return { response };

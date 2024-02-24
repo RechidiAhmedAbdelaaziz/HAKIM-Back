@@ -14,7 +14,7 @@ router.route("/").get(question.listAll).post(question.create);
 router
 	.route("/:id")
 	.get(question.getById)
-	.post(question.update)
+	.patch(question.update)
 	.delete(question.delete);
 
 router

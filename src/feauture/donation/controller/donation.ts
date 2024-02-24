@@ -1,8 +1,7 @@
 import { Schema } from "mongoose";
 import expressAsyncHandler from "express-async-handler";
 import { DonationUseCases as useCases } from "../usecases";
-import { AuthPayload } from "../../auth/dio/auth";
-import { SendErorrOrResponse } from "../../../utils";
+import { AuthPayload, SendErorrOrResponse } from "../../../utils";
 
 const contrller = {
 	requestDonation: expressAsyncHandler(async (req, res, next) => {

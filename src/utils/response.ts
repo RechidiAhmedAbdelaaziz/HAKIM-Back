@@ -12,17 +12,19 @@ export class AppResponse {
 	data?: object;
 	message?: string;
 	token?: string;
-	pagination?: Pagination | null;
+	pagination?: Pagination;
 	constructor(
 		statusCode: number,
 		data?: ModelsGetterReturn<any> | any,
 		message?: string
 	) {
 		this.statusCode = statusCode;
-		this.pagination = data.pagination;
-		this.token = data.token;
-		if (data.result) this.data = data.result;
-		else this.data = data;
+		if (data) {
+			this.pagination = data.pagination;
+			this.token = data.token;
+			if (data.result) this.data = data.result;
+			else this.data = data;
+		}
 
 		this.message = message;
 	}

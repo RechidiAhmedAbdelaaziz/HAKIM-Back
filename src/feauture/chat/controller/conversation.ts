@@ -1,8 +1,7 @@
 import { Schema } from "mongoose";
 import expressAsyncHandler from "express-async-handler";
 import { ConversationUseCases as useCases } from "../usecases";
-import { AuthPayload } from "../../auth/dio/auth";
-import { SendErorrOrResponse } from "../../../utils";
+import { AuthPayload, SendErorrOrResponse } from "../../../utils";
 
 const contrller = {
 	sendMessage: expressAsyncHandler(async (req, res, next) => {

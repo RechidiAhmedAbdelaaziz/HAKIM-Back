@@ -13,9 +13,10 @@ const controller = {
 	}),
 
 	unlike: expressAsyncHandler(async (req, res, next) => {
-		const id = req.params.id as unknown as Schema.Types.ObjectId;
+		const { id: user } = <AuthPayload>req.user;
+		const post = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const result = await useCases.deleteLike({ id });
+		const result = await useCases.deleteLike({ post, user });
 		SendErorrOrResponse(result, res, next);
 	}),
 };

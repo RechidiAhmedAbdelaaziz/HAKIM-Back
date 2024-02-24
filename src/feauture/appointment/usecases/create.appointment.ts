@@ -25,6 +25,6 @@ export const CreateAppointment: UseCase<Params> = async (params) => {
 	});
 	if (!appointment) return { error: Errors.Genric };
 
-	const response = new AppResponse(ResStatus.OK);
+	const response = new AppResponse(ResStatus.OK, appointment);
 	return { response };
 };

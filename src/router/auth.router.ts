@@ -7,9 +7,9 @@ const router = express.Router();
 router
 	.route("/")
 	.post(controller.login)
-	.get(isUserKind.Patient, controller.showMyProfile);
+	.get(verifyAuthorization, controller.showMyProfile);
 router.post("/signup", controller.signUp);
-router.post("/signup-dr", controller.createDoctorProfile);
-router.get("/:id", verifyAuthorization, controller.showMyProfile);
+router.post("/signup-dr", isUserKind.Patient, controller.createDoctorProfile);
+router.get("/:id", verifyAuthorization, controller.showProfile);
 
 export { router as AuthRouter };
