@@ -23,7 +23,9 @@ export const signUp: UseCase<Params> = async (params) => {
 	const token = genrateSign(user);
 	await sendVerificationEmail(user._id, user.email);
 
-	const response = new AppResponse(ResStatus.OK, { token, result: token });
+	const { password: x, ...other } = user.toObject();
+
+	const response = new AppResponse(ResStatus.OK, { token, result: other });
 
 	return { response };
 };

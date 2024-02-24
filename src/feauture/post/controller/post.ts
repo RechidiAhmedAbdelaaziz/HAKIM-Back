@@ -38,12 +38,17 @@ const controller = {
 	}),
 
 	listForUser: expressAsyncHandler(async (req, res, next) => {
-		const id = req.params.id as unknown as
-			| Schema.Types.ObjectId
-			| undefined;
-		const user = <AuthPayload>req.user;
+		const poster = req.params.id as unknown as Schema.Types.ObjectId;
 
-		const poster = id || user.id;
+		const result = await useCases.listUserPosts({
+			poster,
+			queries: req.query,
+		});
+		SendErorrOrResponse(result, res, next);
+	}),
+
+	listMine: expressAsyncHandler(async (req, res, next) => {
+		const { id: poster } = <AuthPayload>req.user;
 
 		const result = await useCases.listUserPosts({
 			poster,

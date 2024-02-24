@@ -11,6 +11,7 @@ const router = express.Router();
 router.use(verifyAuthorization);
 
 router.route("/").get(post.listAllPosts).post(post.create);
+router.route("/my").get(post.listMine);
 router.route("/my/:id").get(post.listForUser);
 router.route("/:id").delete(post.delete).patch(post.update).get(post.getById);
 router.route("/:id/like").delete(like.unlike).post(like.like);

@@ -12,7 +12,7 @@ const controller = {
 	}),
 
 	create: expressAsyncHandler(async (req, res, next) => {
-		const { id: respondent } = <AuthPayload>req.body;
+		const { id: respondent } = <AuthPayload>req.user;
 		const { text } = req.body;
 		const question = req.params.id as unknown as Schema.Types.ObjectId;
 

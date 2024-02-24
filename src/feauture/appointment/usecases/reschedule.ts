@@ -11,7 +11,11 @@ interface Params {
 export const RescheduleAppointment: UseCase<Params> = async (params) => {
 	const { id, date } = params;
 
-	const appointment = await Appointment.findByIdAndUpdate(id, { date });
+	const appointment = await Appointment.findByIdAndUpdate(
+		id,
+		{ date },
+		{ new: true }
+	);
 	if (!appointment) return { error: Errors.No_Model("Appointment") };
 
 	const response = new AppResponse(

@@ -13,6 +13,10 @@ export const CancelAppointment: UseCase<Params> = async (params) => {
 	const appointment = await Appointment.findByIdAndDelete(id);
 	if (!appointment) return { error: Errors.No_Model("Appointment") };
 
-	const response = new AppResponse(ResStatus.OK, {}, "Appointment canceled");
+	const response = new AppResponse(
+		ResStatus.No_Content,
+		{},
+		"Appointment canceled"
+	);
 	return { response };
 };

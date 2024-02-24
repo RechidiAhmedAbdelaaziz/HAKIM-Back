@@ -1,9 +1,8 @@
 import { Schema } from "mongoose";
-import { Errors, ResStatus } from "../../../constants";
+import { ResStatus } from "../../../constants";
 import { AppResponse, UseCase } from "../../../utils";
 import { Appointment } from "../models/appointment";
-import { User } from "../../auth/models";
-import ModelsGetter from "../../../utils/model.getter";
+import moment from "moment";
 import { paginate } from "../../../utils/pagination";
 
 interface Params {
@@ -19,11 +18,13 @@ export const listAppointments: UseCase<Params> = async (params) => {
 	const page = queries.page * 1 || 1;
 	const limit = queries.limit * 1 || 10;
 
+	const startOfDay = moment(date).startOf("day").toDate();
+	const endOfDay = moment(date).endOf("day").toDate();
 	const appointments = await Appointment.find({
 		$or: [{ doctor }, { patient }],
 		date: {
-			$gte: date.setHours(0, 0, 0, 0),
-			$lt: date.setHours(23, 59, 59, 999),
+			$gte: startOfDay,
+			$lt: endOfDay,
 		},
 	})
 		.sort("-date")

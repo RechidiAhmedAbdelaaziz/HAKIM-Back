@@ -4,8 +4,8 @@ import { AppModels } from "../../../constants";
 export interface PostDoc extends Document {
 	text: string;
 	poster: Schema.Types.ObjectId;
-	likers: Schema.Types.ObjectId[];
-	comments: Schema.Types.ObjectId[];
+	likers: number;
+	comments: number;
 }
 
 const schema = new Schema(
